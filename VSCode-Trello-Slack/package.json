@@ -1,0 +1,71 @@
+{
+  "name": "TrelloVSCodeExtension",
+  "displayName": "Trello VSCode Extension",
+  "description": "Connect to Trello and access your boards, lists, and cards, to manipulate cards.",
+  "version": "0.1.2",
+  "publisher": "katvharris",
+  "engines": {
+    "vscode": "^0.10.1"
+  },
+  "license": "MIT",
+  "homepage" : "https://github.com/KatVHarris/VSCode-Trello/blob/master/README.md",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "Trello",
+    "Tracking",
+    "Project Organization"
+  ],
+  "icon": "MyTrelloDog.png",
+  "galleryBanner": {
+    "color": "#A1A0A0",
+    "theme": "light"
+  },
+  "bugs": {
+    "url":"https://github.com/katvharris/vscode-trello/issues",
+    "email": ""
+  },
+  "activationEvents": [
+    "onCommand:extension.loginToTrello",
+    "onCommand:extension.mCCTNL",
+    "onCommand:extension.getAllBoards",
+    "onCommand:extension.closeCard"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.mCCTNL",
+        "title": "Trello: Move Current Card to New List"
+      },
+      {
+        "command": "extension.loginToTrello",
+        "title": "Trello: Login"
+      },
+      {
+        "command": "extension.getAllBoards",
+        "title": "Trello: Get A Card"
+      },
+      {
+        "command": "extension.closeCard",
+        "title" : "Trello: Close Current Card"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+    "pretest": "tsc",
+    "test": "mocha --ui tdd ./out/test"
+  },
+  "devDependencies": {
+    "typescript": "^1.6.2",
+    "vscode": "0.10.x"
+  },
+  "dependencies": {
+    "node-trello": "^1.1.2",
+    "open": "0.0.5",
+    "trello": "^0.5.0"
+  }
+}
