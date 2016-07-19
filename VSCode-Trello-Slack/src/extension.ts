@@ -1,27 +1,25 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import TrelloClient from './trello';
 import * as vsInterface from './vscodeInteractions';
 
 var open = require('open');
 
-var trelloClient : TrelloClient
 var token, extensionKey, currentBID, currentCID, currentLID
 
 
 // TODO: Ensure that the usertoken is stored somewhere - and configured, so that the user
 // doesn't have to do this all the time
 const appKey = '03e153ce92addad232ddc24891e07c60';
-var _userToken = ''; 
+var _userToken = '';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
+
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "txc" is now active!'); 
+	console.log('Congratulations, your extension "txc" is now active!');
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
@@ -31,124 +29,75 @@ export function activate(context: vscode.ExtensionContext) {
 
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World!');
-		
-	});
-	
 
-	
-	var login = vscode.commands.registerCommand('extension.loginToTrello', () => loginTrello());
-	var getBoards = vscode.commands.registerCommand('extension.getAllBoards', () => getACard());
-	var moveCardTL = vscode.commands.registerCommand('extension.mCCTNL', () => moveCurCardTL());
-	var closeCurCard = vscode.commands.registerCommand('extension.closeCard', () => closeCurrentCard());
+	});
+
+	var postToTrello = vscode.commands.registerCommand('extension.postToTrello', () => postTaskToTrello());
 	var postToSlack = vscode.commands.registerCommand('extension.postToSlack', () => postNoteToSlack());
-	
-	context.subscriptions.push(disposable);
-	context.subscriptions.push(login);
-	context.subscriptions.push(moveCardTL);
-	context.subscriptions.push(getBoards);
-	context.subscriptions.push(closeCurCard);
+
+	context.subscriptions.push(postToTrello);
 	context.subscriptions.push(postToSlack);
-
-
 }
 
-
-function loginTrello(){
-	//need to authenticate user
-	// Display a message box to the user
-	//vscode.window.showInformationMessage('Trying To Login');
-	let authUrl = 'https://trello.com/1/authorize?key=' + appKey + '&expiration=never&response_type=token&scope=read,write,account';
-	open(authUrl);
-	createClient();
-}
-
-function loginTrelloTest() {
-	createClient();
-}
-
-function createClient() {
-	vsInterface.InsertUserToken().then(userToken => {
-		console.log(userToken);
-		_userToken = userToken;
-		trelloClient = trelloClient || new TrelloClient(appKey, userToken);
-		displayLoggedIn('Trello logged in');
-	});
-}
-
-function getACardTest(){
-	_userToken = '';
-	trelloClient = trelloClient || new TrelloClient(appKey, '');
-	getACard();
-}
-
-function getACard() {
-	//getBoards from TrelloAPI
-	//UPdate the UI with vscodeInteractions
-	//repeat
-	if(!_userToken){
-		vsInterface.ShowError("You are not LoggedIn. Use 'Trello: Login' command to Login.");
-	}else{
-		trelloClient.getMyBoards().then(() => {
-			return vsInterface.ShowBoards(trelloClient._boards, trelloClient._boardsIDs)
-		}).then(selectedBoard => {
-			currentBID = selectedBoard; 
-			return trelloClient.getBoardLists(selectedBoard);
-		}).then(() => {
-			return vsInterface.ShowLists(trelloClient._lists, trelloClient._listsIDs)
-		}).then(selectedList => {	
-			currentLID = selectedList;
-			return trelloClient._getAllCards(selectedList);
-		}).then(() => {
-			return vsInterface.ShowCards(trelloClient._cards, trelloClient._cardsIDs)
-		}).then(selectedCard => {
-			trelloClient._setCurCardID(selectedCard);
-			displayCardOnBottom(selectedCard);
-			return (true);
-		}, err => {
-				
-		});
-	}
-
-		
-}
-
-function moveCurCardTL(){
-	if(!(trelloClient || trelloClient.currentCID)){
-		vsInterface.ShowError("You need to get a card before you try to move one.");
-	}
-	else{
-		//ask user for a listName to move card || show user possible lists
-		//if no current card, show user a error box and ask them to "Trello: Get A Card"
-		vsInterface.ShowLists(trelloClient._lists, trelloClient._listsIDs).then(
-			selectedList => {
-				//moveCard to the specified List...
-				//get new List ID then 
-				trelloClient._moveCurrentCardToList(selectedList);
-				displayCardOnBottom(trelloClient.currentCard);
-			},err => {
-				
-			});
-	}
-}
-
-function closeCurrentCard(){
-	if(!(trelloClient) || !(trelloClient.currentCID)){
-		vsInterface.ShowError("You need to get a card to work on.");
-	}else{
-		trelloClient._closeCard();
-		vsInterface.AddToBar("Select a Card", '', '', '','$(terminal)');
-	}
-
-}
 function postNoteToSlack() {
-	vscode.window.showInputBox({prompt: 'Please type your note and press enter',placeHolder:'Enter your note'})
-    .then(val => vscode.window.showInformationMessage('Your input was ' + val));
-}
-function displayCardOnBottom(displayString: string){
-	vsInterface.AddToBar('', '', '', displayString, '$(file-text)' ); 
+	vscode.window.showInputBox({prompt: 'Please type your note and press enter',placeHolder:'Enter your note for Slack!!'})
+		.then((val) => {
+			vscode.window.showInformationMessage('Your input was ' + val);
+			var querystring = require('querystring');
+			var http = require('http');
+
+			var postData = querystring.stringify({"message": " + val + "});
+
+			var options = {
+				hostname: 'http://192.168.1.65',
+				port: '8080',
+				path: '',
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Content-Length': postData.length
+				}
+			};
+
+			var req = http.request(options, (res) => {
+				//console.log(`STATUS: ${res.statusCode}`);
+				//console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+				res.setEncoding('utf8');
+				res.on('data', (chunk) => {
+				//	console.log(`BODY: ${chunk}`);
+				});
+				res.on('end', () => {
+				//	console.log('No more data in response.')
+				})
+			});
+
+			req.on('error', (e) => {
+				//console.log(`problem with request: ${e.message}`);
+			});
+
+// write data to request body
+			req.write(postData);
+			req.end();
+
+		});
 }
 
-function displayLoggedIn(loggedIn: string){
-	vsInterface.AddToBar(loggedIn, '', '', '', '$(person)');
-}
+function postTaskToTrello() {
+	vscode.window.showInputBox({prompt: 'Please type your Task and press enter',placeHolder:'Enter your Task for Trello'})
+		.then(val => {
+			vscode.window.showInformationMessage('Your input was ' + val);
 
+			var http = require('http');
+			var myRes;
+
+			http.get('http://192.168.1.62:3000/api/addCheckListItem?name=' + val, (res) => {
+				//console.log(`Got response: ${res.statusCode}`);
+				//myRes = res.statusCode;
+				// consume response body
+				res.resume();
+			}).on('error', (e) => {
+				//console.log(`Got error: ${e.message}`);
+				//myRes = e.message;
+			});
+		});
+}

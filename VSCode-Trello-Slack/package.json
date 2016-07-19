@@ -1,7 +1,7 @@
 {
   "name": "TrelloVSCodeExtension",
   "displayName": "Trello VSCode Extension",
-  "description": "Connect to Trello and access your boards, lists, and cards, to manipulate cards.",
+  "description": "Connect to Trello and Slack",
   "version": "0.1.2",
   "publisher": "katvharris",
   "engines": {
@@ -14,12 +14,14 @@
   ],
   "keywords": [
     "Trello",
+    "Slack",
     "Tracking",
     "Project Organization"
   ],
+
   "icon": "MyTrelloDog.png",
   "galleryBanner": {
-    "color": "#A1A0A0",
+    "color": "#A1A0A0 ",
     "theme": "light"
   },
   "bugs": {
@@ -27,34 +29,29 @@
     "email": ""
   },
   "activationEvents": [
-    "onCommand:extension.loginToTrello",
-    "onCommand:extension.mCCTNL",
-    "onCommand:extension.getAllBoards",
-    "onCommand:extension.closeCard",
-   "onCommand:extension.postToSlack"
+    "onCommand:extension.postToTrello",
+    "onCommand:extension.postToSlack"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "commands": [
       {
-        "command": "extension.mCCTNL",
-        "title": "Trello: Move Current Card to New List"
-      },
-      {
-        "command": "extension.loginToTrello",
-        "title": "Trello: Login"
-      },
-      {
-        "command": "extension.getAllBoards",
-        "title": "Trello: Get A Card"
-      },
-      {
-        "command": "extension.closeCard",
-        "title" : "Trello: Close Current Card"
+        "command": "extension.postToTrello",
+        "title" : "Trello: Add Card"
       },
       {
         "command": "extension.postToSlack",
         "title": "Slack: Post note to slack"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.postToSlack",
+        "key": "ctrl+alt+8"
+      },
+      {
+        "command": "extension.postToTrello",
+        "key": "ctrl+alt+9"
       }
     ]
   },
@@ -69,7 +66,7 @@
     "vscode": "0.10.x"
   },
   "dependencies": {
-    "node-trello": "^1.1.2",
+    //"node-trello": "^1.1.2",
     "open": "0.0.5",
     "trello": "^0.5.0"
   }
