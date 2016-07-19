@@ -43,41 +43,67 @@ function postNoteToSlack() {
 	vscode.window.showInputBox({prompt: 'Please type your note and press enter',placeHolder:'Enter your note for Slack!!'})
 		.then((val) => {
 			vscode.window.showInformationMessage('Your input was ' + val);
-			var querystring = require('querystring');
 			var http = require('http');
 
-			var postData = querystring.stringify({"message": " + val + "});
-
-			var options = {
-				hostname: 'http://192.168.1.65',
-				port: '8080',
-				path: '',
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'Content-Length': postData.length
-				}
-			};
-
-			var req = http.request(options, (res) => {
-				//console.log(`STATUS: ${res.statusCode}`);
-				//console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-				res.setEncoding('utf8');
-				res.on('data', (chunk) => {
-				//	console.log(`BODY: ${chunk}`);
-				});
-				res.on('end', () => {
-				//	console.log('No more data in response.')
-				})
+			http.get('http://192.168.1.65:8080/codenote/slack1?message=' + val, (res) => {
+				//console.log(`Got response: ${res.statusCode}`);
+				//myRes = res.statusCode;
+				// consume response body
+				res.resume();
+			}).on('error', (e) => {
+				//console.log(`Got error: ${e.message}`);
+				//myRes = e.message;
 			});
 
-			req.on('error', (e) => {
-				//console.log(`problem with request: ${e.message}`);
-			});
-
-// write data to request body
-			req.write(postData);
-			req.end();
+//			var http = require('http');
+//			var myRes;
+//
+//			http.get('http://192.168.1.62:3000/api/addCheckListItem?name=' + val, (res) => {
+//				//console.log(`Got response: ${res.statusCode}`);
+//				//myRes = res.statusCode;
+//				// consume response body
+//				res.resume();
+//			}).on('error', (e) => {
+//				//console.log(`Got error: ${e.message}`);
+//				//myRes = e.message;
+//			});
+//
+//			var querystring = require('querystring');
+//			var http = require('http');
+//			var myData = {message: val};
+//
+//			var postData = querystring.stringify({"message": "THIS IS THE MILLIONth TEST"});
+//
+//			var options = {
+//				hostname: 'http://192.168.1.65',
+//				port: '8080',
+//				path: '/codenote/slack',
+//				method: 'POST',
+//				headers: {
+//					'Content-Type': 'application/json',
+//					'Content-Length': postData.length
+//				}
+//			};
+//
+//			var req = http.request(options, (res) => {
+//				//console.log(`STATUS: ${res.statusCode}`);
+//				//console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+//				res.setEncoding('utf8');
+//				res.on('data', (chunk) => {
+//				//	console.log(`BODY: ${chunk}`);
+//				});
+//				res.on('end', () => {
+//				//	console.log('No more data in response.')
+//				})
+//			});
+//
+//			req.on('error', (e) => {
+//				//console.log(`problem with request: ${e.message}`);
+//			});
+//
+//// write data to request body
+//			req.write(postData);
+//			req.end();
 
 		});
 }
