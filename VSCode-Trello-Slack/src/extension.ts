@@ -40,14 +40,15 @@ export function activate(context: vscode.ExtensionContext) {
 	var getBoards = vscode.commands.registerCommand('extension.getAllBoards', () => getACard());
 	var moveCardTL = vscode.commands.registerCommand('extension.mCCTNL', () => moveCurCardTL());
 	var closeCurCard = vscode.commands.registerCommand('extension.closeCard', () => closeCurrentCard());
-	
+	var postToSlack = vscode.commands.registerCommand('extension.postToSlack', () => postNoteToSlack());
 	
 	context.subscriptions.push(disposable);
-	
 	context.subscriptions.push(login);
 	context.subscriptions.push(moveCardTL);
 	context.subscriptions.push(getBoards);
 	context.subscriptions.push(closeCurCard);
+	context.subscriptions.push(postToSlack);
+
 
 }
 
@@ -61,8 +62,7 @@ function loginTrello(){
 	createClient();
 }
 
-function loginTrelloTest(){
-
+function loginTrelloTest() {
 	createClient();
 }
 
@@ -140,7 +140,10 @@ function closeCurrentCard(){
 	}
 
 }
-
+function postNoteToSlack() {
+	vscode.window.showInputBox({prompt: 'Please type your note and press enter',placeHolder:'Enter your note'})
+    .then(val => vscode.window.showInformationMessage('Your input was ' + val));
+}
 function displayCardOnBottom(displayString: string){
 	vsInterface.AddToBar('', '', '', displayString, '$(file-text)' ); 
 }

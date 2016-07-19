@@ -10,7 +10,7 @@ var token, extensionKey, currentBID, currentCID, currentLID;
 // TODO: Ensure that the usertoken is stored somewhere - and configured, so that the user
 // doesn't have to do this all the time
 var appKey = '03e153ce92addad232ddc24891e07c60';
-var _userToken = '6a24a45a3abceae8c163a22260a89fc157218e881727fba9a3fea98ef6b652d7';
+var _userToken = '';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
@@ -29,11 +29,13 @@ function activate(context) {
     var getBoards = vscode.commands.registerCommand('extension.getAllBoards', function () { return getACard(); });
     var moveCardTL = vscode.commands.registerCommand('extension.mCCTNL', function () { return moveCurCardTL(); });
     var closeCurCard = vscode.commands.registerCommand('extension.closeCard', function () { return closeCurrentCard(); });
+    var postToSlack = vscode.commands.registerCommand('extension.postToSlack', function () { return postNoteToSlack(); });
     context.subscriptions.push(disposable);
     context.subscriptions.push(login);
     context.subscriptions.push(moveCardTL);
     context.subscriptions.push(getBoards);
     context.subscriptions.push(closeCurCard);
+    context.subscriptions.push(postToSlack);
 }
 exports.activate = activate;
 function loginTrello() {
@@ -112,6 +114,10 @@ function closeCurrentCard() {
         trelloClient._closeCard();
         vsInterface.AddToBar("Select a Card", '', '', '', '$(terminal)');
     }
+}
+function postNoteToSlack() {
+    vscode.window.showInputBox({ prompt: 'Please type your note and press enter', placeHolder: 'Enter your note' })
+        .then(function (val) { return vscode.window.showInformationMessage('Your input was ' + val); });
 }
 function displayCardOnBottom(displayString) {
     vsInterface.AddToBar('', '', '', displayString, '$(file-text)');

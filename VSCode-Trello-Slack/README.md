@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/KatVHarris/VSCode-Trello.svg?branch=master)](https://travis-ci.org/KatVHarris/VSCode-Trello)
 
-# VSCode-Trello
+# VSCode-Trello-Slack
 Extension for Trello and VSCode
 
 ### Commands
@@ -11,6 +11,8 @@ Extension for Trello and VSCode
 3) Trello: Move Card to a New List - Moves the current card the user has to a new list in the Current Board
 
 4) Trello: Close Current Card - Closes the current card the user is working with 
+
+5) Slack: Post Note To Channel
 
 Scheduled Commands:
 
